@@ -91,7 +91,8 @@ class DartEnv(gym.Env):
         # in image learning
         self.screen_width = screen_width
         self.screen_height = screen_height
-        self._get_viewer()
+        if self.visualize:
+            self._get_viewer()
         # Give different observation space for different kind of envs
         if self._obs_type == 'parameter':
             high = np.inf*np.ones(self.obs_dim)

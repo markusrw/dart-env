@@ -4,9 +4,11 @@ from gym.envs.dart import dart_env
 
 
 class DartHopperEnv(dart_env.DartEnv, utils.EzPickle):
-    def __init__(self):
+    def __init__(self,sparse_rewards=True,uninformative_instead_sparse=True):
         self.control_bounds = np.array([[1.0, 1.0, 1.0],[-1.0, -1.0, -1.0]])
         self.action_scale = 200
+        self.sparse_rewards = sparse_rewards
+        self.uninformative_instead_sparse = uninformative_instead_sparse
         obs_dim = 11
 
         dart_env.DartEnv.__init__(self, 'hopper_capsule.skel', 4, obs_dim, self.control_bounds, disableViewer=False)
@@ -43,7 +45,10 @@ class DartHopperEnv(dart_env.DartEnv, utils.EzPickle):
                 joint_limit_penalty += abs(1.5)
 
         alive_bonus = 1.0
-        reward = (posafter - posbefore) / self.dt
+        if self.sparse_rewards:
+            reward = 0.
+        else:
+            reward = (posafter - posbefore) / self.dt
         reward += alive_bonus
         reward -= 1e-3 * np.square(a).sum()
         reward -= 5e-1 * joint_limit_penalty
