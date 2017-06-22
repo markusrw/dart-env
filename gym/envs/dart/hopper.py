@@ -4,11 +4,11 @@ from gym.envs.dart import dart_env
 
 
 class DartHopperEnv(dart_env.DartEnv, utils.EzPickle):
-    def __init__(self,sparse_rewards=True,uninformative_instead_sparse=True):
+    def __init__(self,sparse_rewards=True):
         self.control_bounds = np.array([[1.0, 1.0, 1.0],[-1.0, -1.0, -1.0]])
         self.action_scale = 200
         self.sparse_rewards = sparse_rewards
-        self.uninformative_instead_sparse = uninformative_instead_sparse
+        self.uninformative_instead_sparse = True
         obs_dim = 11
 
         dart_env.DartEnv.__init__(self, 'hopper_capsule.skel', 4, obs_dim, self.control_bounds, disableViewer=True)
@@ -35,8 +35,7 @@ class DartHopperEnv(dart_env.DartEnv, utils.EzPickle):
         self.advance(a)
         posafter,ang = self.robot_skeleton.q[0,2]
         height = self.robot_skeleton.bodynodes[2].com()[1]
-
-
+        # print(posafter)
         joint_limit_penalty = 0
         for j in [-2]:
             if (self.robot_skeleton.q_lower[j] - self.robot_skeleton.q[j]) > -0.05:
@@ -57,7 +56,7 @@ class DartHopperEnv(dart_env.DartEnv, utils.EzPickle):
                     (height > .7) and (height < 1.8) and (abs(ang) < .4))
         ob = self._get_obs()
 
-        return ob, reward, done, {}
+        return ob, reward, done, {'xposition':posafter}
 
     def _get_obs(self):
         state =  np.concatenate([

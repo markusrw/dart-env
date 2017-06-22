@@ -3,7 +3,9 @@ from gym import utils
 from gym.envs.mujoco import mujoco_env
 
 class HopperEnv(mujoco_env.MujocoEnv, utils.EzPickle):
-    def __init__(self):
+    def __init__(self,sparse_rewards=False):
+        self.sparse_rewards = sparse_rewards
+        self.uninformative_instead_sparse = True
         mujoco_env.MujocoEnv.__init__(self, 'hopper.xml', 4)
         utils.EzPickle.__init__(self)
 
@@ -12,7 +14,10 @@ class HopperEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.do_simulation(a, self.frame_skip)
         posafter, height, ang = self.model.data.qpos[0:3, 0]
         alive_bonus = 1.0
-        reward = (posafter - posbefore) / self.dt
+        if self.sparse_rewards:
+            reward = 0.
+        else:
+            reward = (posafter - posbefore) / self.dt
         reward += alive_bonus
         reward -= 1e-3 * np.square(a).sum()
         s = self.state_vector()
