@@ -61,7 +61,7 @@ class DartWalker2dEnv(dart_env.DartEnv, utils.EzPickle):
 
         ob = self._get_obs()
 
-        return ob, reward, done, {}
+        return ob, reward, done, {'xposition':posafter}
 
     def _get_obs(self):
         state =  np.concatenate([
