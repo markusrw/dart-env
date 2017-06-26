@@ -4,14 +4,15 @@ from gym.envs.dart import dart_env
 
 
 class DartWalker2dEnv(dart_env.DartEnv, utils.EzPickle):
-    def __init__(self,sparse_rewards=True):
+    def __init__(self, sparse_rewards=True):
+        sparse_rewards = True
         self.sparse_rewards = sparse_rewards
         self.uninformative_instead_sparse = True
         self.control_bounds = np.array([[1.0]*6,[-1.0]*6])
         self.action_scale = np.array([100, 100, 20, 100, 100, 20])
         obs_dim = 17
 
-        dart_env.DartEnv.__init__(self, 'walker2d.skel', 4, obs_dim, self.control_bounds, disableViewer=False)
+        dart_env.DartEnv.__init__(self, 'walker2d.skel', 4, obs_dim, self.control_bounds, visualize=False, disableViewer=True)
 
         utils.EzPickle.__init__(self)
 
@@ -43,7 +44,7 @@ class DartWalker2dEnv(dart_env.DartEnv, utils.EzPickle):
             vel = (posafter - posbefore) / self.dt
         reward = vel
         reward += alive_bonus
-        reward -= 1e-3 * np.square(a).sum()
+        # reward -= 1e-3 * np.square(a).sum()
 
         # uncomment to enable knee joint limit penalty
         '''joint_limit_penalty = 0

@@ -5,6 +5,7 @@ from gym.envs.mujoco import mujoco_env
 class Walker2dEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
     def __init__(self,sparse_rewards=False):
+        sparse_rewards = False
         self.sparse_rewards = sparse_rewards
         self.uninformative_instead_sparse = True
         mujoco_env.MujocoEnv.__init__(self, "walker2d.xml", 4)
@@ -20,7 +21,7 @@ class Walker2dEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         else:
             reward = (posafter - posbefore) / self.dt
         reward += alive_bonus
-        reward -= 1e-3 * np.square(a).sum()
+        # reward -= 1e-3 * np.square(a).sum()
 
         # uncomment to enable knee joint limit penalty
         '''joint_limit_penalty = 0
