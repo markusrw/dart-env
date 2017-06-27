@@ -6,17 +6,19 @@ class DartCartPoleEnv(dart_env.DartEnv, utils.EzPickle):
     def __init__(self):
         control_bounds = np.array([[1.0],[-1.0]])
         self.action_scale = 100
-        dart_env.DartEnv.__init__(self, 'cartpole.skel', 2, 4, control_bounds, dt=0.02, disableViewer=False)
+        dart_env.DartEnv.__init__(self, 'cartpole.skel', 2, 4, control_bounds, action_type="discrete", dt=0.02, disableViewer=False)
         utils.EzPickle.__init__(self)
 
     def _step(self, a):
-        reward = 1.0
+        ob = self._get_obs()
+        if np.abs(ob[1]) <= .2:
+            reward = 1.0
 
         tau = np.zeros(self.robot_skeleton.ndofs)
         tau[0] = a[0] * self.action_scale
 
         self.do_simulation(tau, self.frame_skip)
-        ob = self._get_obs()
+
 
         notdone = np.isfinite(ob).all() and (np.abs(ob[1]) <= .2)
         done = not notdone

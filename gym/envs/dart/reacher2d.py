@@ -7,7 +7,8 @@ class DartReacher2dEnv(dart_env.DartEnv, utils.EzPickle):
         self.target = np.array([0.1, 0.01, -0.1])
         self.action_scale = np.array([200, 200])
         self.control_bounds = np.array([[1.0, 1.0],[-1.0, -1.0]])
-        dart_env.DartEnv.__init__(self, 'reacher2d.skel', 2, 11, self.control_bounds, dt=0.01, disableViewer=False)
+        self.uninformative_instead_sparse = True
+        dart_env.DartEnv.__init__(self, 'reacher2d.skel', 2, 11, self.control_bounds, dt=0.01, visualize=False, disableViewer=True)
         for s in self.dart_world.skeletons:
             s.set_self_collision_check(False)
             for n in s.bodynodes:
@@ -28,15 +29,21 @@ class DartReacher2dEnv(dart_env.DartEnv, utils.EzPickle):
 
         vec = self.robot_skeleton.bodynodes[-1].com() - self.target
 
-        reward_dist = - np.linalg.norm(vec)
+        reward_dist = np.linalg.norm(vec)
+        dist_for_reward = 0.1
+        if reward_dist < dist_for_reward:
+            reward = -reward_dist
+        else:
+            reward = - dist_for_reward
         reward_ctrl = - np.square(a).sum()#*0.1
-        reward = reward_dist + reward_ctrl
+        reward += reward_ctrl
 
         s = self.state_vector()
         #done = not (np.isfinite(s).all() and (-reward_dist > 0.02))
         done = False
 
-        return ob, reward, done, {}
+        success = float(reward_dist < 0.05)
+        return ob, reward, done, {'xposition':success}
 
     def _get_obs(self):
         theta = self.robot_skeleton.q

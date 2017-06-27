@@ -21,7 +21,7 @@ class DartCartPoleImgEnv(dart_env.DartEnv, utils.EzPickle):
         control_bounds = np.array([[1.0],[-1.0]])
         self.action_space = spaces.Discrete(2)
         dart_env.DartEnv.__init__(self, 'cartpole.skel', 2, 4, control_bounds, \
-                                  obs_type="image", action_type="discrete", visualize=False, \
+                                  obs_type="image", action_type="discrete", visualize=False, disableViewer=True, \
                                   screen_width=self.screen_width, screen_height=self.screen_height)
         utils.EzPickle.__init__(self)
 
